@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+#https://gist.github.com/d2cd2789d82284f5e72d82ce6160805c
+
 
 require "tty-command"
 require "tty-prompt"
@@ -8,44 +10,62 @@ FOLDERS = ['archive', 'documents', 'workspace']
 
 #query = ARGV[0].shellescape
 
-class Search
+class Zim
   # @return [String]
-  def bar; end
+  attr_accessor :command, :query
 
-  def self.zim(phrase)
-
-    zim = TTY::Command.new()
-    output = zim.run("zim --search Notes #{phrase}")
+  def initialize(query)
+    @command = TTY::Command.new
+    @query = query
   end
+
+  def self.search(fer)
+    # cmd = TTY::Command.new
+
+    results = @command.run("zim --search Notes '#{fer}'")
+
+    return results
+  end
+
+  def self.open(page)
+    # cmd = TTY::Command.new
+    @command.run("zim Notes '#{page}'")
+  end
+
 end
 
+search_prompt = TTY::Prompt.new
+
+query = TTY::Prompt.new.ask("enter query", required: true, modify: :trim)
+
+query = query.shellsplit
+
+phrase = lambda {|x| x + " or"}
+
+last_word = query.pop
+
+complete_phrase = []
+
+query.each {|term| complete_phrase << phrase[term] }
+
+complete_phrase.append(last_word)
+
+complete_phrase = complete_phrase.shelljoin
 
 
-def search(fer)
-  cmd = TTY::Command.new
-
-  results = cmd.run("zim --search Notes #{fer}")
-
-  return results
-end
-
-def open(page)
-  cmd = TTY::Command.new
-  cmd.run("zim Notes #{page}")
-end
-
-results = search("git")
 #
+results = Zim.search(complete_phrase)
+
+puts "#{results}"
+
+# #
 pages = results.out.split("\n")
 
-# [0].gsub(/\\/,'')
-#
-# page = page.shellescape
 prompt = TTY::Prompt.new
-
+#
 page = prompt.select("anything look good?", pages)
-
-open(page.shellescape)
+#
+Zim.open(page.shellescape)
 
 
 
