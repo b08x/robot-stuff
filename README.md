@@ -22,3 +22,6 @@ wake up a host on the local network with magic packets
 
 ## backup
 like free insurance
+
+## sound
+start/stop linux sound layer services. control (to a degree) volume

@@ -16,9 +16,10 @@ choices = selection_prompt.multi_select("select host to bother", hosts)
 
 choices.each do |host|
   selection_prompt.say "waking up hosts..."
-  wol.run("wol #{host}")
-  print wol.results
-  #exec("wol #{host}")
-  #sleep 1
+  result = wol.run("wol #{host}")
+  if result.failed?
+    puts "I either can't or I won't"
+    next
+  end
 end
 
