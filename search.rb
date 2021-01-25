@@ -52,7 +52,7 @@ module Query
   module_function
 
   def parse(subject)
-    terms = query.shellsplit
+    terms = subject.shellsplit
     return terms
   end
 
@@ -61,3 +61,6 @@ end
 subject = TTY::Prompt.new.ask("What are you looking for?", required: true, modify: :trim)
 
 terms = Query.parse(subject)
+
+#rga "search query" . | wofi --show dmenu
+rga_options = ["-S", "--hidden", "--rga-accurate", "-e"]

@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-MOUNT_STATUS=$(mount | grep bender)
-
 SRC="/home/b08x/"
 DEST="/mnt/bender/b08x/"
 
 RSYNC="rsync -aiiP --recursive --verbose --force --stats --sparse"
 
-if [[ -d $MOUNT_STATUS ]]
-  then
-    echo "bender not mounted"
-    exit
-fi
+mountpoint -q $DEST
 
-$RSYNC --exclude-from="$HOME/.filter" "$SRC" "$DEST" > "$HOME/backup.log" &
+if [[ $? == 0 ]]
+then
+  $RSYNC --exclude-from="$HOME/.filter" "$SRC" "$DEST" > "$HOME/backup.log" &
+  wait
+else
+  echo "bender not mounted" > "$HOME/backup.log"
+fi
 
 # run rsync -n in the opposite direction

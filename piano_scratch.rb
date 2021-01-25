@@ -3,6 +3,8 @@
 require 'tty-command'
 require 'tty-prompt'
 require 'shellwords'
+require 'childprocess'
+
 
 # open up a keys soundfont
 
@@ -12,14 +14,22 @@ class Launcher
   attr_accessor :command
 
   def initialize
-    @command = TTY::Command.new
+    @command = TTY::Command.new(pty: true)
   end
 
   def open(app)
-    @command.run(app)
+    pid = fork do
+        exec(app)
+    end
   end
 end
 
 hey_launcher = Launcher.new
 
-hey_launcher.open("kitty")
+process = hey_launcher.open("kitty")
+
+
+puts process
+sleep 1
+Process.wait
+Process.kill 'TERM', process
