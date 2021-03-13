@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+
 DEVICE = 'hw:0'.freeze
 
 $amixer = 'systemd-cat /usr/bin/amixer -D'
@@ -18,6 +19,10 @@ def setlevel(name, lvl)
   `#{$amixer} #{DEVICE} set #{name} #{lvl}`
 end
 
+def ssetlevel(name, lvl, mute)
+  `#{$amixer} #{DEVICE} sset #{name},0 #{lvl} #{mute}`
+end
+
 def toggleswitch(switch)
   `#{$amixer} #{DEVICE} cset name='#{switch}' toggle`
 end
@@ -32,10 +37,11 @@ end
 
 def openmixer
   fork do
-    system('/usr/bin/st -ai -f "Hack Nerd Font Mono" -e "/usr/bin/alsamixer"')
+    system('/usr/bin/terminator -e "/usr/bin/alsamixer"')
     exit
   end
 end
+
 
 def start
   `systemctl --user stop pulseaudio.service`
@@ -49,23 +55,34 @@ def start
   `notify-send "starting pulse"`
 end
 
-case args
-when 'openmixer'
-  openmixer
-when 'start'
-  start
-when 'setlevel'
-  puts "hey"
-  setlevel('PCM', '80%')
-  setlevel('Master', '80%')
-  setlevel('Headphone', '80%')
-  setlevel('Speaker', '0%')
-  mute('Speaker')
-  %w[Master Headphone].each { |x| unmute(x) }
+def stop
+  `jack_control exit`
+  `a2j_control --exit`
+  `systemctl --user stop pulseaudio.service`
 end
 
-# amixer: Unknown command 'name=Capture Switch'...
-toggleswitch("Capture Switch")
+case args
+when "mixer"
+  openmixer
+when "start"
+  start
+
+  ssetlevel("Master", "58", "unmute")
+  ssetlevel("Headphone", "0", "mute")
+  ssetlevel("Front", "58", "unmute")
+  ssetlevel("Surround", "58", "unmute")
+  ssetlevel("Center", "0", "mute")
+  ssetlevel("LFE", "0", "mute")
+  ssetlevel("Capture", "0", "mute")
+  setlevel("PCM", "90%")
+
+  # amixer: Unknown command 'name=Capture Switch'...
+  toggleswitch("Capture Switch")
+when stop
+  stop
+end
+
+
 
 #{-----------------------------------------------------------------------------}
 # echo 3072 > /sys/class/rtc/rtc0/max_user_freq
