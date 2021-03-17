@@ -19,17 +19,17 @@ class Launcher
 
   def open(app)
     pid = fork do
-        exec(app)
+        @command.run(app)
     end
   end
 end
 
 hey_launcher = Launcher.new
 
-process = hey_launcher.open("kitty")
+process = hey_launcher.open("terminator -e alsamixer")
 
 
 puts process
 sleep 1
-Process.wait
 Process.kill 'TERM', process
+Process.wait

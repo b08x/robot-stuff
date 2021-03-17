@@ -78,6 +78,8 @@ when "start"
 
   # amixer: Unknown command 'name=Capture Switch'...
   toggleswitch("Capture Switch")
+when "soundbot01"
+  # set mic levels
 when stop
   stop
 end

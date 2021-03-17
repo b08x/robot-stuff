@@ -3,7 +3,7 @@
 SRC="/home/b08x/"
 DEST="/mnt/bender/b08x/"
 
-RSYNC="rsync -aiinP --recursive --verbose --force --stats --sparse"
+RSYNC="rsync -aiiP --copy-links --recursive --verbose --force --stats --sparse"
 
 mountpoint -q $DEST
 

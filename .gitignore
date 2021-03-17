@@ -80,3 +80,5 @@ _site/
 .jekyll-metadata
 
 .solargraph.yml
+
+process.rb

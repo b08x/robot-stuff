@@ -11,3 +11,5 @@ gem 'osc-ruby'
 
 gem 'ffi'
 gem 'childprocess'
+
+gem 'coltrane'
