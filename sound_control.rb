@@ -15,7 +15,7 @@ when "start"
   begin
     system("pulseaudio -k") if status("pulseaudio")
     system("jack_control start") unless status("jackdbus")
-    system("a2j_control --start") unless status("a2jmidid")
+    system("a2j_control start") unless status("a2jmidid")
     system("pulseaudio --start")
   rescue => e
     puts e
@@ -23,7 +23,7 @@ when "start"
 when "stop"
   begin
     system("jack_control exit")
-    system("a2j_control --exit")
+    system("a2j_control exit")
   rescue => e
     puts e
   end
