@@ -56,7 +56,7 @@ when "start"
     system("pulseaudio -k") if status("pulseaudio")
     system("jack_control start") unless status("jackdbus")
     sleep 0.5
-    system("a2j_control --start") unless status("a2jmidid")
+    system("a2j_control start") unless status("a2jmidid")
     system("pulseaudio --start")
   rescue => e
     puts e
@@ -65,7 +65,7 @@ when "stop"
   begin
     system("notify-send 'stopping jack'")
     system("jack_control exit")
-    system("a2j_control --exit")
+    system("a2j_control exit")
   rescue => e
     puts e
   end

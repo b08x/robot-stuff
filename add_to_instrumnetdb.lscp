@@ -1,0 +1,9 @@
+
+ADD DB_INSTRUMENTS RECURSIVE '/collections' '/home/b08x/Library/Sounds/soundfonts/collections/'
+ADD DB_INSTRUMENTS RECURSIVE '/fx' '/home/b08x/Library/Sounds/soundfonts/fx/'
+ADD DB_INSTRUMENTS RECURSIVE '/keys' '/home/b08x/Library/Sounds/soundfonts/keys/'
+ADD DB_INSTRUMENTS RECURSIVE '/loops' '/home/b08x/Library/Sounds/soundfonts/loops/'
+ADD DB_INSTRUMENTS RECURSIVE '/percussion' '/home/b08x/Library/Sounds/soundfonts/percussion/'
+ADD DB_INSTRUMENTS RECURSIVE '/strings' '/home/b08x/Library/Sounds/soundfonts/strings/'
+ADD DB_INSTRUMENTS RECURSIVE '/synths' '/home/b08x/Library/Sounds/soundfonts/synths/'
+ADD DB_INSTRUMENTS RECURSIVE '/winds' '/home/b08x/Library/Sounds/soundfonts/winds/'

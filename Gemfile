@@ -10,7 +10,6 @@ gem 'highline'
 
 gem 'osc-ruby'
 
-gem 'ffi'
 gem 'childprocess'
 
 gem 'coltrane'
@@ -19,3 +18,14 @@ gem 'banjo'
 gem 'refinements'
 
 gem 'awesome_print'
+
+gem 'activesupport'
+gem 'ffi'
+gem 'i18n'
+gem 'kramdown'
+gem 'minitest'
+gem 'mocha'
+gem 'multi_json '
+gem 'rouge '
+gem 'rugged'
+gem 'sys-proctable'
