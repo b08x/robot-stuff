@@ -9,7 +9,7 @@ gem 'tty-prompt'
 gem 'highline'
 
 gem 'osc-ruby'
-
+gem 'i3ipc'
 gem 'childprocess'
 
 gem 'coltrane'
@@ -25,7 +25,7 @@ gem 'i18n'
 gem 'kramdown'
 gem 'minitest'
 gem 'mocha'
-gem 'multi_json '
-gem 'rouge '
+gem 'multi_json'
+gem 'rouge'
 gem 'rugged'
 gem 'sys-proctable'

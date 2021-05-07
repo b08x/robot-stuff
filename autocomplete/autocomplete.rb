@@ -102,3 +102,6 @@ sounds.map! {|fullpath| fullpath.split}
 #
 
 # Pathname("/%placeholder%/samples/%placeholder%").gsub("%placeholder%", "test")
+
+# gather array subsets of most commmon words, filenames,
+#.uniq.sort
