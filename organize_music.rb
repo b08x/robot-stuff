@@ -6,6 +6,7 @@ require "refinements/hashes"
 require "refinements/pathnames"
 require "shellwords"
 require "fileutils"
+require "tty-command"
 
 IMPORT=File.join("/mnt/bender/media/music_old/")
 TMPFS=File.join("/srv/organize/deadsampler/")
@@ -88,9 +89,19 @@ module FileStuff
   end
 
   def ffmpeg_normalize(file)
+    #https://gist.github.com/whizkydee/804d7e290f46c73f55a84db8a8936d74
+    #https://github.com/slhck/ffmpeg-normalize/wiki/examples
     sample_rate = `soxi -r "#{file}"`.strip.to_i
 
     `ffmpeg-normalize -pr -nt ebu --dual-mono "#{file}" -c:a libvorbis -ar "#{sample_rate}" -o "#{file}" -f`
+  end
+
+  def beet_import(folder)
+  end
+
+  def sox_stats(file)
+    cmd = TTY::Command.new
+    return cmd.run("sox '#{file}' -n stats", :err => :out)
   end
 
   # def move_to_collection(tmp_folder)

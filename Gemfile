@@ -11,6 +11,7 @@ gem 'highline'
 gem 'osc-ruby'
 gem 'i3ipc'
 gem 'childprocess'
+gem 'parallel'
 
 gem 'coltrane'
 gem 'banjo'

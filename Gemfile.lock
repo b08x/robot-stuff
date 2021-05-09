@@ -159,6 +159,7 @@ DEPENDENCIES
   mocha
   multi_json
   osc-ruby
+  parallel
   pry
   pry-doc
   refinements
