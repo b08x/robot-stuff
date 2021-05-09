@@ -5,8 +5,12 @@ require "refinements"
 require "refinements/hashes"
 require "refinements/pathnames"
 require "shellwords"
+require "fileutils"
 
-MUSIC="/mnt/bender/media/music_old"
+IMPORT=File.join("/mnt/bender/media/music_old/")
+TMPFS=File.join("/srv/organize/deadsampler/")
+HOME=ENV['HOME']
+COLLECTION=File.join(HOME, 'Music', 'Collection')
 
 module Globbing
   module_function
@@ -22,7 +26,19 @@ module Globbing
 
     # => returns files within a given folder
   def for_files(src_folder)
-    return Pathname(src_folder).files "**/*.{flac,wav,wma,m4a,ogg}"
+    return Pathname(src_folder).files "**/*.{mp3,wma,m4a}"
+  end
+
+  def for_ogg(src_folder)
+    return Pathname(src_folder).files "**/*.{ogg}"
+  end
+
+  def for_flac(src_folder)
+    return Pathname(src_folder).files "**/*.{flac}"
+  end
+
+  def for_wav(src_folder)
+    return Pathname(src_folder).files "**/*.{wav}"
   end
 
 end
@@ -45,45 +61,79 @@ module FileStuff
     return Pathname(soundfile).extname
   end
 
-  def hardlink(soundfile)
-    #hardlink to tmpfs
-    #rieturn pathname to tmp file
-    #folder,file = soundfile.split
-    
-    #ideall this is the artist folder
-    #directory = folder.dirname.to_s
-    #ideally this is the album folder
-    #basename = folder.basename.to_s
+  def copy_folder_to_tmp(folder)
+    source = folder.relative_path_from(IMPORT)
+    tmpfs_destination = Pathname.new(TMPFS + source.to_s).cleanpath
 
-    #tmpdir = Pathname.new(File.join('/tmp/organize/', basename))
+    puts "gonna copy #{folder.dirname}"
+    puts "\n"
+    puts "#{tmpfs_destination}"
+    FileUtils.cp_r folder.dirname, TMPFS
 
-    #unless tmpdir.exist?
-
-      #Dir.mktmpdir(tmpdir.to_s.shellescape)
-
-    #end
-
-    #FileUtils.cp_lr(soundfile.cleanpath, tmpdir)
-    soundfile.make_link("/tmp")
-    return 
+    return tmpfs_destination
   end
+
+  def dir2ogg(tmp_folder)
+    `dir2ogg -v -r -P -m -W --delete-input -q 10 "#{tmp_folder}"`
+  end
+
+  def move_to_collection(tmpfs_destination)
+      destination = tmpfs_destination.relative_path_from(TMPFS)
+      destination = Pathname.new(File.join(COLLECTION, destination)).cleanpath
+
+      puts "moving #{tmpfs_destination.dirname} to #{destination.dirname}"
+
+      FileUtils.mv tmpfs_destination.dirname, destination.dirname
+
+  end
+
+  def ffmpeg_normalize(file)
+    sample_rate = `soxi -r "#{file}"`.strip.to_i
+
+    `ffmpeg-normalize -pr -nt ebu --dual-mono "#{file}" -c:a libvorbis -ar "#{sample_rate}" -o "#{file}" -f`
+  end
+
+  # def move_to_collection(tmp_folder)
+  #   destination = tmp_folder.relative_path_from(TMPFS)
+  #   destination = Pathname.new(File.join(COLLECTION, destination)).cleanpath
+  #   puts "#{tmp_folder}"
+  #   puts "\n"
+  #   puts "#{destination}"
+  #   exit
+  #   unless destination.exist?
+  #     FileUtils.mv(tmp_folder, COLLECTION)
+  #   end
+  #
+  # end
+
 
 end
 
-module Wav
-  module_function
-
-  using Refinements::Pathnames
-
-  def normalize
-  end
-
-end
-
+# class Convert
+#   attr_accessor :source, :destination
+#
+#   def initialize
+#     @source = ""
+#     @destination = ""
+#   end
+#
+#   def copy_to_tmp
+#   end
+#
+#   # process in tmpfs
+#   def convert
+#   end
+#
+#   def move_to_collection
+#   end
+#
+#   def remove_old
+#   end
+# end
 
 # this will return a pathname object for every wav/flac sample
 # found in the SAMPLES directory(recursively)
-sounds = Globbing.for_files(MUSIC)
+sounds = Globbing.for_files(IMPORT)
 
 # take the full path of a file and split it
 # this will create two pathname objects;
@@ -91,22 +141,18 @@ sounds = Globbing.for_files(MUSIC)
 # acutally is and the other being the filename
 # itself
 #sounds.map! {|fullpath| fullpath.split}
+folders = sounds.map {|fullpath| fullpath.dirname}
+folders = folders.uniq
 
-sounds.each do |song|
-  title = FileStuff.name(song)
-  extension = FileStuff.ext(song)
-  
-  case extension
-    when "flac"
-      puts "#{title} is flac!" 
-    when "wav"
-      tmpfile = FileStuff.hardlink(song)
+folders.each do |folder|
+  puts "#{folder}"
+  tmpfs_destination = FileStuff.copy_folder_to_tmp(folder)
+  FileStuff.dir2ogg(tmpfs_destination)
+  files = Globbing.for_ogg(tmpfs_destination)
+  files.each do |file|
+   FileStuff.ffmpeg_normalize(file)
+  end
+  #
+  FileStuff.move_to_collection(tmpfs_destination)
 
-    when "mp3"
-      puts "convert to ogg"
-    when "m4a"
-      puts "convert to ogg"
-    when "ogg"
-      puts "do noththing"
-    end
 end
