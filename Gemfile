@@ -14,7 +14,7 @@ gem 'childprocess'
 gem 'parallel'
 
 gem 'coltrane'
-gem 'banjo'
+#gem 'banjo'
 
 gem 'refinements'
 

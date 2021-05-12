@@ -7,14 +7,9 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    alsa-rawmidi (0.3.2)
-      ffi (~> 1.0)
     ast (2.4.2)
     awesome_print (1.9.2)
     backport (1.1.2)
-    banjo (0.0.3)
-      eventmachine (~> 1.0.3)
-      unimidi (~> 0.3.3)
     benchmark (0.1.1)
     childprocess (4.0.0)
     cli-ui (1.5.1)
@@ -34,10 +29,7 @@ GEM
       dry-core (~> 0.3, >= 0.3.3)
       dry-equalizer
     e2mmap (0.1.0)
-    eventmachine (1.0.9.1)
     ffi (1.15.0)
-    ffi-coremidi (0.4.1)
-      ffi (~> 1.9, >= 1.9.6)
     gambiarra (0.0.5)
       activesupport (> 5.2)
       cli-ui (~> 1.1)
@@ -52,9 +44,6 @@ GEM
     kramdown-parser-gfm (1.1.0)
       kramdown (~> 2.0)
     method_source (1.0.0)
-    midi-jruby (0.1.6)
-    midi-winmm (0.1.10)
-      ffi (>= 1.0)
     mini_portile2 (2.5.1)
     minitest (5.14.4)
     mocha (1.12.0)
@@ -131,11 +120,6 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
-    unimidi (0.3.5)
-      alsa-rawmidi (~> 0)
-      ffi-coremidi (~> 0)
-      midi-jruby (~> 0)
-      midi-winmm (~> 0)
     wisper (2.0.1)
     yard (0.9.26)
     zeitwerk (2.4.2)
@@ -147,7 +131,6 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   awesome_print
-  banjo
   childprocess
   coltrane
   ffi
@@ -171,4 +154,4 @@ DEPENDENCIES
   tty-prompt
 
 BUNDLED WITH
-   2.2.3
+   2.2.15
