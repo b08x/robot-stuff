@@ -8,10 +8,10 @@ require "shellwords"
 require "fileutils"
 require "tty-command"
 
-IMPORT=File.join("/mnt/bender/media/music_old/")
-TMPFS=File.join("/srv/organize/deadsampler/")
+IMPORT=File.join("/srv/share/import/media/to_sort/test/")
+TMPFS=File.join("/var/tmp/processing/")
 HOME=ENV['HOME']
-COLLECTION=File.join(HOME, 'Music', 'Collection')
+#COLLECTION=File.join(HOME, 'Music', 'Collection')
 
 module Globbing
   module_function
@@ -66,10 +66,14 @@ module FileStuff
     source = folder.relative_path_from(IMPORT)
     tmpfs_destination = Pathname.new(TMPFS + source.to_s).cleanpath
 
-    puts "gonna copy #{folder.dirname}"
+
+    puts "folder = #{folder}"
+    puts "gonna copy #{folder}"
     puts "\n"
-    puts "#{tmpfs_destination}"
-    FileUtils.cp_r folder.dirname, TMPFS
+    puts "source = #{source}"
+    puts "tmpfs_destiation = #{tmpfs_destination}"
+
+    FileUtils.cp_r folder, TMPFS
 
     return tmpfs_destination
   end
@@ -96,7 +100,9 @@ module FileStuff
     `ffmpeg-normalize -pr -nt ebu --dual-mono "#{file}" -c:a libvorbis -ar "#{sample_rate}" -o "#{file}" -f`
   end
 
-  def beet_import(folder)
+  def beet_import(folder="#{TMPFS}")
+    cmd = TTY::Command.new(pty: true, printer: :pretty)
+    cmd.run("beet import '#{TMPFS}'", :err => :out)
   end
 
   def sox_stats(file)
@@ -104,43 +110,7 @@ module FileStuff
     return cmd.run("sox '#{file}' -n stats", :err => :out)
   end
 
-  # def move_to_collection(tmp_folder)
-  #   destination = tmp_folder.relative_path_from(TMPFS)
-  #   destination = Pathname.new(File.join(COLLECTION, destination)).cleanpath
-  #   puts "#{tmp_folder}"
-  #   puts "\n"
-  #   puts "#{destination}"
-  #   exit
-  #   unless destination.exist?
-  #     FileUtils.mv(tmp_folder, COLLECTION)
-  #   end
-  #
-  # end
-
-
 end
-
-# class Convert
-#   attr_accessor :source, :destination
-#
-#   def initialize
-#     @source = ""
-#     @destination = ""
-#   end
-#
-#   def copy_to_tmp
-#   end
-#
-#   # process in tmpfs
-#   def convert
-#   end
-#
-#   def move_to_collection
-#   end
-#
-#   def remove_old
-#   end
-# end
 
 # this will return a pathname object for every wav/flac sample
 # found in the SAMPLES directory(recursively)
@@ -155,15 +125,35 @@ sounds = Globbing.for_files(IMPORT)
 folders = sounds.map {|fullpath| fullpath.dirname}
 folders = folders.uniq
 
-folders.each do |folder|
-  puts "#{folder}"
-  tmpfs_destination = FileStuff.copy_folder_to_tmp(folder)
-  FileStuff.dir2ogg(tmpfs_destination)
-  files = Globbing.for_ogg(tmpfs_destination)
-  files.each do |file|
-   FileStuff.ffmpeg_normalize(file)
-  end
-  #
-  FileStuff.move_to_collection(tmpfs_destination)
+folders = sounds.collect {|fullpath| fullpath.dirname if fullpath.extname != ".opus"}
+p folders
+exit
 
+folders.each do |folder|
+  staging_directory = FileStuff.copy_folder_to_tmp(folder)
+  FileStuff.dir2ogg(staging_directory.cleanpath)
+  exit
+  FileStuff.beet_import
+  sleep 5
 end
+
+
+
+#{----------------------------------------------------------}
+#this works. each folder that contains m4a/wma is converted to ogg.
+# then each file is normalized.
+#then then folder is copied to the collection folder
+# gonna adjust this to utilize beets
+# folders.each do |folder|
+#   puts "#{folder}"
+#   tmpfs_destination = FileStuff.copy_folder_to_tmp(folder)
+#   FileStuff.dir2ogg(tmpfs_destination)
+#   files = Globbing.for_ogg(tmpfs_destination)
+#   files.each do |file|
+#    FileStuff.ffmpeg_normalize(file)
+#   end
+#   #
+#   FileStuff.move_to_collection(tmpfs_destination)
+#
+# end
+#{----------------------------------------------------------}

@@ -1,7 +1,16 @@
 #!/usr/bin/env ruby
 
 require 'tempfile'
+require 'tty-command'
 
-test = { :bender => "soemthing" }
+files = ARGV
 
-puts test[:bender]
+cmd = TTY::Command.new(printer: :pretty)
+
+files.each do |file|
+  cmd.run("terminator -b")
+end
+# files.each do |x|
+# `terminator -e echo "#{x}"`
+# sleep 1
+# end
