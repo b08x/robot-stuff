@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
 require 'csv'
-class Annotate
+class Annotate < AudioFile
     def initialize(audiofile)
-      super("run sonic-annotator: #{audiofile}")
+      #super("run sonic-annotator: #{audiofile}")
       #@path = path.to_path.shellescape
-      @path = Pathname.new(audiofile)
+      @path = audiofile
       @plugins = File.join(APP_ROOT, 'plugins')
     end
 

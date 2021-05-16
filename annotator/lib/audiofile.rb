@@ -8,7 +8,7 @@ class AudioFile
 
   def initialize(fullpath)
     @fullpath = Pathname.new(fullpath)
-    @parent = nil
+    @parent = @fullpath.relative_path_from(IMPORT).dirname
     @name = @fullpath.name
     @extension = @fullpath.extname
     @sox_stats = {}

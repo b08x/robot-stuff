@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class SoxStuff
+class SoxStuff < AudioFile
   def initialize(audiofile)
-    super("Get sox stats: #{audiofile}")
-    @path = Pathname.new(audiofile)
+    #super("Get sox stats: #{audiofile}")
+    @path = audiofile.to_path
   end
 
   def get_channels
@@ -43,13 +43,13 @@ class SoxStuff
     end
   end
 
-  def get_stats
-    get_channels
-    get_samplerate
-    get_bitdepth
-    get_encoding
-    get_length
-    get_levels
-  end
+  # def get_stats
+  #   get_channels
+  #   get_samplerate
+  #   get_bitdepth
+  #   get_encoding
+  #   get_length
+  #   get_levels
+  # end
 
 end
