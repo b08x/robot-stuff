@@ -16,8 +16,4 @@ class AudioFile
     @tempo = 0
   end
 
-  def parent
-    @parent = @fullpath.relative_path_from(IMPORT_DIR).dirname
-  end
-
 end
