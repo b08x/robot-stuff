@@ -40,7 +40,7 @@ end
 class AudioInfo < FileInfo
   attr_accessor :channels, :samplerate, :bitdepth, :encoding, :length,
                 :rms, :peak
-  
+
   def get_channels
     @channels = `soxi -c "#{@file}"`.strip.to_i
   end
@@ -88,12 +88,13 @@ class AudioInfo < FileInfo
 end
 
 class Annotate
-  attr_accessor :tempo, :key, :notes
-  
+  attr_accessor :tempo, :key, :notes, :notes_in_hz, :notes_aubio
+
   def initialize(file)
     @source = file
     @notes = []
     @notes_in_hz = []
+    @notes_aubio = []
   end
 
   def get_tempo
@@ -113,7 +114,7 @@ class Annotate
       @key = row.last
     end
   end
-  
+
   def get_notes_in_hz
     profile = File.join(PLUGINS, 'pynotes.n3')
     results = `sonic-annotator -q -t "#{profile}" "#{@source}" -w csv --csv-stdout`
@@ -130,6 +131,14 @@ class Annotate
     end
   end
 
+  def get_notes_aubio
+    profile = File.join(PLUGINS, 'silvetnotes.n3')
+    results = `sonic-annotator -q -n -t "#{profile}" "#{@source}" -w csv --csv-stdout`
+    CSV.parse(results, :col_sep => ',') do |row|
+      @notes_aubio << row.last
+    end
+  end
+
   #def annotate
   #  get_notes
   #  get_key
@@ -143,13 +152,12 @@ soundfile.get_stats
 annotate = Annotate.new(soundfile.sourcepath)
 annotate.get_notes
 annotate.get_notes_in_hz
+annotate.get_notes_aubio
 annotate.get_key
 
-if annotate.notes.count > 4
+if annotate.notes_in_hz.count > 4
   annotate.get_tempo
 end
 
 p soundfile
 p annotate
-
-
