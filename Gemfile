@@ -6,6 +6,7 @@ gem 'solargraph'
 
 gem 'tty-command'
 gem 'tty-prompt'
+gem 'tty-option'
 gem 'highline'
 
 gem 'osc-ruby'

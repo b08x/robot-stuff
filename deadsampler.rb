@@ -146,8 +146,18 @@ class Annotate
   #end
 end
 
+print ARGV
+exit
+
 soundfile = AudioInfo.new(sourcefile)
 soundfile.get_stats
+
+#TODO:
+# create temp file and prepare
+# dcoffset
+# hpf/lpf
+# trim silence
+# samplerate?
 
 annotate = Annotate.new(soundfile.sourcepath)
 annotate.get_notes
