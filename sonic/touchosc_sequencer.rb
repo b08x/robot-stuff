@@ -1,14 +1,33 @@
 # Welcome to Sonic Pi
 
+def set_tempo(x)
+  set :tempo, x
+end
+
 in_thread(name: :clock) do
   loop do
     cue :clock
     sleep 1
+    puts current_beat_duration
+  end
+end
+
+in_thread(name: :half, sync: :clock) do
+  loop do
+    cue :half
+    sleep 0.5
+  end
+end
+
+in_thread(name: :quarter, sync: :clock) do
+  loop do
+    cue :quarter
+    sleep 0.25
   end
 end
 
 
-defonce :sequences do
+#defonce :sequences do
   # row 1
   set :seq1, Array.new(16).map!{|x|x ?x:0}
   # row 2
@@ -21,7 +40,9 @@ defonce :sequences do
   set :seq5, Array.new(16).map!{|x|x ?x:0}
   # row 6
   set :seq6, Array.new(16).map!{|x|x ?x:0}
-end
+#end
+
+
 
 def gen_seq_array(array,bool,index)
   generate_sequence = lambda {|array,bool,index| array.delete_at(index);
@@ -34,34 +55,34 @@ in_thread(name: :oscthing) do
 
   live_loop :osc do
     use_real_time
+
     # this will be either 1 or 0
     onoff = sync "/osc*/2/seq/*/*"
+    onoff = onoff.first
+    #print onoff
 
     # this will be in a range from 1-6
-    row = parse_sync_address("/osc*/2/seq/*/*")[3].to_i
-    puts "row: #{row}"
+    sequence = parse_sync_address("/osc*/2/seq/*/*")[3].to_i
+    #puts "row: #{row}"
+
     # this will be in a range from 1-16
-    @index = parse_sync_address("/osc*/2/seq/*/*")[4].to_i
+    index = parse_sync_address("/osc*/2/seq/*/*")[4].to_i
+    index = (index - 1)
+    #print index
 
-    @index = (@index - 1)
-    print @index
 
-    @onoff = onoff.first
-
-    print @onoff
-
-    case row
+    case sequence
     when 1
-      puts "row1"
+      puts "sequence1"
       a = get[:seq1].dup
-      seqA = gen_seq_array(a,@onoff,@index)
-      set :seq1, seqA
+      seqZ = gen_seq_array(a,onoff,index)
+      set :seq1, seqZ
       print get[:seq1]
     when 2
-      puts "row2"
+      puts "sequence2"
       a = get[:seq2].dup
-      seqA = gen_seq_array(a,@onoff,@index)
-      set :seq2, seqA
+      seqZ = gen_seq_array(a,onoff,index)
+      set :seq2, seqZ
       print get[:seq2]
     when 3
     when 4
@@ -83,30 +104,31 @@ def note2
   return note
 end
 
-in_thread(name: :sound01) do
+#in_thread(name: :sound01) do
 
   live_loop :first do
-    sync :clock
+    sync :quarter
 
-    16.times do
+    #16.times do
       tick
-      play note1, on: get[:seq1].ring.look
-      sleep 0.25
-    end
+      sample :drum_heavy_kick, on: get[:seq1].ring.look
+      #sleep 0.25
+    #end
     puts "end of seq1"
 
   end
 
   live_loop :second do
-    sync :clock
+    sync :quarter
 
-    16.times do
+    #16.times do
       tick
-      play note2, on: get[:seq2].ring.look
-      sleep 0.25
-    end
+      sample :drum_snare_soft, amp: 1.5, on: get[:seq2].ring.look
+      #sleep 0.25
+    #end
+
     puts "end of seq2"
   end
 
 
-end
+#end
