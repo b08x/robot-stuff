@@ -8,6 +8,18 @@
 @seq3 = Array.new(16)
 @seq4 = Array.new(16)
 
+@seq1 = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+@seq1.split(",").map {|x| x.to_i}
+
+#indexes:
+#### 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
+@seq1 = "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+
+@seq1.split.map {|x| x.to_i}
+
+@seq1.slice!(2)
+@seq1.insert(2,"1")
+
 define :parse_sync_address do |address| # used to retrieve data which matched wild card in synced event
   v= get_event(address).to_s.split(",")[6]
   if v != nil
@@ -28,6 +40,9 @@ end
 generate_sequence = lambda {|array,bool,index| array.delete_at(index);
 array.insert(index,bool)}
 
+generate_sequence = lambda {|array,bool,index| array.slice!(index);
+array.insert(index,bool)}
+
 live_loop :seq1 do
 
   use_real_time
@@ -44,6 +59,7 @@ live_loop :seq1 do
 
 
 end
+
 comment do
   generate_sequence[@seq1,0,4]
   generate_sequence[@seq1,0,8]
