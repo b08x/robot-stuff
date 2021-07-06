@@ -7,10 +7,10 @@ gem 'pry-doc'
 gem 'tty-command'
 gem 'tty-prompt'
 gem 'tty-option'
-gem 'highline'
+#gem 'highline'
 
 gem 'osc-ruby'
-gem 'i3ipc'
+#gem 'i3ipc'
 #gem 'childprocess'
 #gem 'parallel'
 
@@ -21,7 +21,7 @@ gem 'unimidi'
 
 gem 'refinements'
 
-gem 'awesome_print'
+#gem 'awesome_print'
 
 #gem 'activesupport'
 #gem 'ffi'

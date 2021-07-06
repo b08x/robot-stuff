@@ -9,7 +9,6 @@ GEM
       zeitwerk (~> 2.3)
     alsa-rawmidi (0.3.2)
       ffi (~> 1.0)
-    awesome_print (1.9.2)
     banjo (0.0.3)
       eventmachine (~> 1.0.3)
       unimidi (~> 0.3.3)
@@ -37,10 +36,8 @@ GEM
       activesupport (> 5.2)
       cli-ui (~> 1.1)
       thor (~> 1.1.0)
-    highline (2.0.3)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
-    i3ipc (0.3.0)
     method_source (1.0.0)
     midi-eye (0.3.8)
       midi-message (~> 0)
@@ -93,11 +90,8 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  awesome_print
   banjo
   coltrane
-  highline
-  i3ipc
   midi-eye
   osc-ruby
   pry-doc
