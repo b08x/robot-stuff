@@ -159,12 +159,13 @@ end
 sample :bass_drop_c
 
 define :squirrel do |reps|
-  use_bpm 45
+  use_bpm 60
   reps.times do
-    midi (octs :d3, 4).tick, sustain: 0.1, channel: 1, velocity: 60, port: "midi_through_port-0"
-    sleep 0.125
+    midi (octs :d2, 4).tick, sustain: 0.1, channel: 1, velocity: 110, port: "midi_through_midi_through_port-0_14_0"
+    sleep [0.25,0.45].choose
   end
 end
+
 16.times do
 squirrel(4)
 end
