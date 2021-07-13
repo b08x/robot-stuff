@@ -6,14 +6,15 @@ require 'fileutils'
 require 'tty-command'
 require 'csv'
 
-IMPORT = File.join("/mnt/backup/Library/Sounds")
+# IMPORT = File.join("/mnt/backup/Library/Sounds")
 
-DEST = File.join(ENV['HOME'], 'Sounds')
+LIBRARY = File.join(ENV['HOME'], 'Library', 'Sounds')
 
 PLUGINS = File.join(ENV['HOME'], 'Workspace', 'robot-stuff', 'annotator', 'plugins')
 
-sourcefile = ARGV[0]
-#sourcefile = "/mnt/backup/Library/Sounds/drumkits/DOUMBEK/Doum B head vel 4.wav"
+TMPFS=File.join("/var/tmp/processing/")
+
+sourcefile = ARGV[1]
 
 if ARGV[0].nil?
   puts "no arguement"
@@ -22,15 +23,15 @@ end
 
 class FileInfo
   attr_accessor :sourcepath, :filename, :extension,
-                :basefolder, :destpath
+                :basefolder, :temppath
 
   def initialize(file)
     @file = Pathname.new(file)
     @sourcepath = @file.to_path
     @filename = @file.basename
     @extension = @file.extname
-    @basefolder = @file.relative_path_from(IMPORT).dirname
-    @destpath = File.join(DEST, basefolder,filename)
+    @basefolder = @file.relative_path_from(LIBRARY).dirname
+    @temppath = File.join(TMPFS, basefolder,filename)
   end
   #cmd = TTY::Command.new(printer: :pretty)
 
@@ -88,13 +89,13 @@ class AudioInfo < FileInfo
 end
 
 class Annotate
-  attr_accessor :tempo, :key, :notes, :notes_in_hz, :notes_aubio
+  attr_accessor :tempo, :key, :notes, :notes_in_hz, :fundamental_frequency
 
   def initialize(file)
     @source = file
     @notes = []
     @notes_in_hz = []
-    @notes_aubio = []
+    @fundamental_frequency = []
   end
 
   def get_tempo
@@ -121,6 +122,8 @@ class Annotate
     CSV.parse(results, :col_sep => ',') do |row|
       @notes_in_hz << row.last
     end
+    # @notes_in_hz.sort! {|x,y| x <=> y}
+    # @fundamental_frequency = @notes_in_hz.max_by {|x| @notes_in_hz.count(x)}
   end
 
   def get_notes
@@ -131,27 +134,31 @@ class Annotate
     end
   end
 
-  def get_notes_aubio
-    profile = File.join(PLUGINS, 'silvetnotes.n3')
+  def get_fundamental_frequency
+    profile = File.join(PLUGINS, 'pyin_ffreq_candidates.n3')
     results = `sonic-annotator -q -n -t "#{profile}" "#{@source}" -w csv --csv-stdout`
+    fund_freq = []
     CSV.parse(results, :col_sep => ',') do |row|
-      @notes_aubio << row.last
+      fund_freq << row[2].to_f.round(1)
     end
+    fund_freq.sort! {|x,y| x <=> y}
+    @fundamental_frequency = fund_freq.max_by {|x| fund_freq.count(x)}
   end
 
-  #def annotate
-  #  get_notes
-  #  get_key
-  #  get_tempo
-  #end
+#TODO: convert fund_freq to midi number
 end
 
-print ARGV
-exit
+p sourcefile.shellescape
 
 soundfile = AudioInfo.new(sourcefile)
-soundfile.get_stats
 
+
+
+#soundfile.get_stats
+
+p soundfile
+p soundfile.temppath
+exit
 #TODO:
 # create temp file and prepare
 # dcoffset
@@ -162,12 +169,15 @@ soundfile.get_stats
 annotate = Annotate.new(soundfile.sourcepath)
 annotate.get_notes
 annotate.get_notes_in_hz
-annotate.get_notes_aubio
+annotate.get_fundamental_frequency
 annotate.get_key
 
 if annotate.notes_in_hz.count > 4
   annotate.get_tempo
 end
 
-p soundfile
-p annotate
+
+puts "#{annotate.notes}"
+puts "#{annotate.notes_in_hz}"
+puts "#{annotate.fundamental_frequency}"
+puts "#{annotate.key}"

@@ -12,6 +12,7 @@ in_thread(name: :clock) do
   end
 end
 
+
 in_thread(name: :half, sync: :clock) do
   loop do
     cue :half
@@ -27,7 +28,7 @@ in_thread(name: :quarter, sync: :clock) do
 end
 
 
-#defonce :sequences do
+def :set_initial_sequences do
   # row 1
   set :seq1, Array.new(16).map!{|x|x ?x:0}
   # row 2
@@ -40,7 +41,7 @@ end
   set :seq5, Array.new(16).map!{|x|x ?x:0}
   # row 6
   set :seq6, Array.new(16).map!{|x|x ?x:0}
-#end
+end
 
 
 
@@ -129,6 +130,4 @@ end
 
     puts "end of seq2"
   end
-
-
 #end
